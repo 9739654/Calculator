@@ -1,4 +1,6 @@
-﻿using Calculator.Common;
+﻿#define ERRORMESSAGES
+
+using Calculator.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -106,9 +108,29 @@ namespace Calculator
 		private void Button_Click(object sender, RoutedEventArgs e)
 		{
 			Calculation c = new Calculation(calculationInput.Text);
-			c.calculate();
-			calculationOutput.Text = c.getResult();
+			string result_list;
+			try
+			{
+				c.calculate();
+				result_list = calculationInput.Text + " = " + c.getResult();// + "\n" + calculationOutput.Text;
+			}
+			catch (InvalidTokenException ite)
+			{
+				result_list = calculationInput.Text.Trim() + " ---> ERROR";
+				#if ERRORMESSAGES
+				result_list += ": "+ite.Message;
+				#endif
+			}
+			catch (Exception ex)
+			{
+				result_list = calculationInput.Text.Trim() + " ---> ERROR";
+				#if ERRORMESSAGES
+				result_list += ": " + ex.Message;
+				#endif
+			}
+			//calculationOutput.Items.Insert(0, result_list);
 			//calculationOutput.Text = "+\n3\t4";
+			calculationOutput.Text = result_list + '\n' + calculationOutput.Text;
 		}
 
 		private void calculationInput_KeyDown(object sender, KeyRoutedEventArgs e)
